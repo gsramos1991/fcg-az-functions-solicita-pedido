@@ -3,8 +3,8 @@
 Solucao baseada em Azure Functions que agenda a geracao e o envio automatico de pedidos ficticios para uma API externa. A funcao coleta metadados de jogos em um arquivo local, monta um payload com itens aleatorios e dispara um POST autenticado periodicamente.
 
 ## Visao Geral
-- **Trigger**: `TimerTrigger("20 * * * * *")` executa o fluxo a cada minuto, no segundo 20.
-- **Carga de dados**: Le `JsonGames/ListOfGames.json` para obter informacoes dos jogos. IDs aleatorios sao sorteados e filtrados contra o catalogo.
+- **Trigger**: `TimerTrigger("*/10 * * * * *")` executa o fluxo a cada 10 segundos
+- **Carga de dados**: Le `JsonGames/ListOfGames.json` para obter informacoes dos jogos. IDs aleatorios sao sorteados e filtrados contra o catalogo. (API publica)
 - **Montagem do pedido**: Para cada jogo valido gera preco (R$50-R$350), quantidade (1-2) e GUIDs individuais. O corpo final contem `userId`, `currency` e colecao de itens.
 - **Envio**: Concatena `URLAPI` + `RotaSolicitacao`, inclui header `Ocp-Apim-Subscription-Key` com `ApiKey` e envia via `HttpClient.PostAsJsonAsync`.
 - **Telemetria**: Utiliza `ILogger` para registrar inicio, sucesso, respostas da API e falhas.
@@ -44,7 +44,3 @@ Eles validam:
 - Intervalo e cardinalidade de IDs gerados.
 - Ordenacao e filtragem de jogos carregados do JSON.
 - Construcao do payload final, incluindo faixas de preco/quantidade e associacao correta aos jogos selecionados.
-
-## Proximos Passos
-- Tratar avisos de nulabilidade nos modelos (`Models/`), definindo valores padrao ou propriedades opcionais.
-- Avaliar uso de `IHttpClientFactory` via DI para facilitar testes e resiliencia (retry/circuit breaker).
